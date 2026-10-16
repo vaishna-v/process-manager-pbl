@@ -8,6 +8,8 @@ namespace fs = std::filesystem;
 
 void ProcessManager::SetSandboxName(const std::string& name) {
     sandboxName = name;
+    // Connect to the DB, but pass false so we DO NOT drop the tables the Enforcer just created
+    db = std::make_unique<DatabaseAdapter>(sandboxName, false);
 }
 
 std::string ProcessManager::GetSandboxName() const {
@@ -64,13 +66,11 @@ std::vector<Process> ProcessManager::DiscoverProcesses() {
                     }
                 }
 
-                // Check for exact Sandbox memory telemetry first
                 long memoryUsage = 0;
                 std::ifstream usageFile("/tmp/sandbox_mem_" + pidStr + ".txt");
                 if (usageFile.is_open()) {
                     usageFile >> memoryUsage;
                 } else {
-                    // Fallback to OS RSS if not a sandboxed program
                     long rss;
                     for(int i = 0; i < 19; ++i) {
                         std::string dummy;
@@ -78,6 +78,18 @@ std::vector<Process> ProcessManager::DiscoverProcesses() {
                     }
                     iss >> rss;
                     memoryUsage = rss * sysconf(_SC_PAGESIZE);
+                }
+
+                // Stream real-time telemetry to PostgreSQL
+                if (db) {
+                    db->LogResourceSnapshot(pid, 0.0, memoryUsage);
+                    
+                    if (latestAction.find("syscall_") != std::string::npos) {
+                        try {
+                            int sysNum = std::stoi(latestAction.substr(8));
+                            db->LogSyscall(pid, sysNum, 1);
+                        } catch (...) {}
+                    }
                 }
 
                 processes.emplace_back(pid, ppid, comm, state, 0.0, memoryUsage, latestAction);

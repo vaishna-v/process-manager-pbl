@@ -1,3 +1,0 @@
-/home/vaishnav/My Stuff/PBL/process-manager/build/CMakeFiles/ProcessMonitor.dir
-/home/vaishnav/My Stuff/PBL/process-manager/build/CMakeFiles/edit_cache.dir
-/home/vaishnav/My Stuff/PBL/process-manager/build/CMakeFiles/rebuild_cache.dir

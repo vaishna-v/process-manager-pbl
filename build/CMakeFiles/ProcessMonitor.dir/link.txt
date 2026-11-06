@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/ProcessMonitor.dir/link.d CMakeFiles/ProcessMonitor.dir/src/Process.cpp.o CMakeFiles/ProcessMonitor.dir/src/ProcessManager.cpp.o CMakeFiles/ProcessMonitor.dir/src/TUI.cpp.o CMakeFiles/ProcessMonitor.dir/src/main.cpp.o -o ProcessMonitor  -lcurses /usr/lib/x86_64-linux-gnu/libform.so -lpqxx -lpq
